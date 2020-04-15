@@ -8,13 +8,10 @@
 #import <UIKit/UIKit.h>
 
 
-typedef void (^TouchOnHeader)(BOOL isTouchOnHeader);
+typedef void (^TouchPoint)(CGPoint point);
 @interface OverlayView : UIScrollView
 
-@property (nonatomic, strong) UIScrollView  *tableHeaderView;
-@property (nonatomic, assign) BOOL isTouchOnHeader;
-@property (nonatomic, copy) TouchOnHeader touchOnHeader;
-@property (nonatomic, assign) BOOL isAnimation;
+@property (nonatomic, copy) TouchPoint touchPoint;
 
 @end
 

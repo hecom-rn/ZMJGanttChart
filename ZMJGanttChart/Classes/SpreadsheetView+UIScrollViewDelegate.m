@@ -98,14 +98,6 @@
     self.pendingSelectionIndexPath = nil;
 }
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
-    self.overlayView.isAnimation = false;
-}
-
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    self.overlayView.isAnimation = true;
-}
-
 #ifdef __IPHONE_11_0
 - (void)scrollViewDidChangeAdjustedContentInset:(UIScrollView *)scrollView {
     [self resetScrollViewFrame];

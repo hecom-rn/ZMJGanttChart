@@ -61,7 +61,7 @@
     _tableHeaderView = tableHeaderView;
     CGSize headerSize = tableHeaderView.frame.size;
     self.tableView.contentInset = UIEdgeInsetsMake(headerSize.height, 0, 0, 0);
-    self.overlayView.tableHeaderView = tableHeaderView;
+
 }
 
 - (void)setup {

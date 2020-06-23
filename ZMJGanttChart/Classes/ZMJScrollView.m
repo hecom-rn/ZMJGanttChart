@@ -48,16 +48,16 @@
 }
 
 - (void)resetReusableObjects {
-    for (ZMJCell *cell in _visibleCells) {
+    for (ZMJCell *cell in [_visibleCells getPairsValues]) {
         [cell removeFromSuperview];
     }
-    for (Gridline *gridline in _visibleVerticalGridlines) {
+    for (Gridline *gridline in [_visibleVerticalGridlines getPairsValues]) {
         [gridline removeFromSuperlayer];
     }
-    for (Gridline *gridline in _visibleHorizontalGridlines) {
+    for (Gridline *gridline in [_visibleHorizontalGridlines getPairsValues]) {
         [gridline removeFromSuperlayer];
     }
-    for (Border *border in _visibleBorders) {
+    for (Border *border in [_visibleBorders getPairsValues]) {
         [border removeFromSuperview];
     }
     _visibleCells               = [ReusableCollection new];

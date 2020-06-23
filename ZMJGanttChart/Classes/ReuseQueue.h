@@ -32,5 +32,6 @@ __VA_ARGS__; \
 - (Reusable)objectForKeyedSubscript:(Address *)key;
 - (void)removeObjectForKey:(Address *)aKey;
 - (void)setObject:(Reusable)obj forKeyedSubscript:(Address *)key;
+- (NSArray *)getPairsValues;
 
 @end

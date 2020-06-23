@@ -96,6 +96,10 @@
     [self.pairs removeObjectForKey:aKey];
 }
 
+- (NSArray *)getPairsValues {
+    return _pairs.allValues.mutableCopy;
+}
+
 #pragma mark - NSFastEnumeration
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained _Nullable [_Nonnull])buffer count:(NSUInteger)len {
 //    LOCK(NSUInteger count = [_pairs countByEnumeratingWithState:state objects:stackbuf count:len]);

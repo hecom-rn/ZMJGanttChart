@@ -431,6 +431,11 @@
     {
         row = indexPath.row + self.frozenRows;
         column = indexPath.column;
+    } else if (CGRectContainsPoint([self.cornerView convertRect:self.cornerView.bounds toView:self], point) &&
+               (indexPath = [self indexPathForItemAt:point scrollView:self.cornerView]))
+    {
+        row = indexPath.row;
+        column = indexPath.column;
     } else {
         return nil;
     }

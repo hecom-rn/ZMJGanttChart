@@ -61,7 +61,9 @@
     _tableHeaderView = tableHeaderView;
     CGSize headerSize = tableHeaderView.frame.size;
     self.tableView.contentInset = UIEdgeInsetsMake(headerSize.height, 0, 0, 0);
-
+    
+    self.rowHeaderView.contentOffset = CGPointMake(self.rowHeaderView.contentOffset.x, self.tableView.contentOffset.y);
+    
 }
 
 - (void)setup {

@@ -246,6 +246,7 @@ CircularScrollScalingFactorMake(NSInteger horizontal, NSInteger vertical)
 
 @property (nonatomic, strong) UIScrollView  *tableHeaderView;
 @property (nonatomic, copy) void (^onScrollEnd)(BOOL);
+@property (nonatomic, copy) void (^onScroll)(NSDictionary *);
 @end
 
 @interface SpreadsheetView (ForCategory) <UIScrollViewDelegate>

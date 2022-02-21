@@ -81,6 +81,13 @@
             self.onScrollEnd(YES);
         }
     }
+    if (self.onScroll != nil) {
+        self.onScroll(@{
+            @"translateY": [NSNumber numberWithFloat:self.tableView.contentOffset.y],
+            @"translateX": [NSNumber numberWithFloat:self.tableView.contentOffset.x],
+            @"scale": [NSNumber numberWithFloat: self.tableView.zoomScale]
+        });
+    }
     [self setNeedsLayout];
     
     defer();

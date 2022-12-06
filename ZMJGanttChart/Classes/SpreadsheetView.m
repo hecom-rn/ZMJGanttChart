@@ -60,10 +60,12 @@
 - (void)setTableHeaderView:(UIScrollView *)tableHeaderView {
     _tableHeaderView = tableHeaderView;
     CGSize headerSize = tableHeaderView.frame.size;
-    self.tableView.contentInset = UIEdgeInsetsMake(headerSize.height, 0, 0, 0);
-    
+    CGFloat scale = self.transform.a;
+    CGPoint offset = self.tableView.contentOffset;
+    offset.y = headerSize.height / scale * -1;
+    self.tableView.contentOffset = offset;
+    self.tableView.contentInset = UIEdgeInsetsMake(headerSize.height / scale, 0, 0, 0);
     self.rowHeaderView.contentOffset = CGPointMake(self.rowHeaderView.contentOffset.x, self.tableView.contentOffset.y);
-    
 }
 
 - (void)setup {

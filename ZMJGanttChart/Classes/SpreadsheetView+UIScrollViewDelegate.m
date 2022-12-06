@@ -55,7 +55,7 @@
         
         CGPoint headerViewOffset = self.tableHeaderView.contentOffset;
         CGSize headerSize = self.tableHeaderView.frame.size;
-        headerViewOffset.y = headerSize.height - offset;
+        headerViewOffset.y = headerSize.height - offset * self.transform.a;
         self.tableHeaderView.contentOffset = headerViewOffset;
    
     } else {

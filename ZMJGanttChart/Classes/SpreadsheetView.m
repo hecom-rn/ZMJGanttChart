@@ -110,6 +110,7 @@
     CGRect frame = self.bounds;
     frame.size.width = 0;
     self.columnHeaderView.frame = frame;
+    self.columnHeaderView.scrollEnabled = NO;
     self.columnHeaderView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     self.columnHeaderView.autoresizesSubviews = NO;
     self.columnHeaderView.showsHorizontalScrollIndicator = NO;
@@ -122,6 +123,7 @@
     self.rowHeaderView.frame = frame;
     self.rowHeaderView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.rowHeaderView.autoresizesSubviews = NO;
+    self.rowHeaderView.scrollEnabled = NO;
     self.rowHeaderView.showsHorizontalScrollIndicator = NO;
     self.rowHeaderView.showsVerticalScrollIndicator = NO;
     self.rowHeaderView.hidden = YES;
@@ -129,6 +131,7 @@
     
     self.cornerView.autoresizesSubviews = NO;
     self.cornerView.hidden = YES;
+    self.cornerView.scrollEnabled = NO;
     self.cornerView.userInteractionEnabled = YES;
     self.cornerView.delegate = self;
     

@@ -107,7 +107,7 @@
 
 #ifdef __IPHONE_11_0
 - (void)scrollViewDidChangeAdjustedContentInset:(UIScrollView *)scrollView {
-    [self resetScrollViewFrame];
+//    [self resetScrollViewFrame];
 }
 #endif
 

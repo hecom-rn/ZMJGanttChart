@@ -300,6 +300,7 @@
         weak_self.rowHeaderView.frame    = weak_self.rowHeaderView.state.frame;
         weak_self.tableView.frame        = weak_self.tableView.state.frame;
     };
+
     UIEdgeInsets contentInset;
 
     if (@available(iOS 11.0, *)) {
@@ -312,26 +313,30 @@
     CGFloat horizontalInset = contentInset.left + contentInset.right;
     CGFloat verticalInset   = contentInset.top + contentInset.bottom;
     
+    
+    CGFloat viewWidth = self.frame.size.width == 0 ?: self.frame.size.width / self.transform.a;
+    CGFloat viewHeight = self.frame.size.height == 0 ?: self.frame.size.height / self.transform.a;
+    
     State state = self.cornerView.state;
     state.frame = CGRectMake(0, 0, self.cornerView.state.contentSize.width, self.cornerView.state.contentSize.height);
     self.cornerView.state = state;
     
     state = self.columnHeaderView.state;
-    state.frame = CGRectMake(0, 0, self.columnHeaderView.state.contentSize.width, self.frame.size.height);
+    state.frame = CGRectMake(0, 0, self.columnHeaderView.state.contentSize.width, viewHeight);
     self.columnHeaderView.state = state;
     
     state = self.rowHeaderView.state;
-    state.frame = CGRectMake(0, 0, self.frame.size.width, self.rowHeaderView.state.contentSize.height);
+    state.frame = CGRectMake(0, 0, viewWidth, self.rowHeaderView.state.contentSize.height);
     self.rowHeaderView.state = state;
     
     state = self.tableView.state;
-    state.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+    state.frame = CGRectMake(0, 0, viewWidth, viewHeight);
     self.tableView.state = state;
     
     if (self.frozenColumns > 0) {
         State state = self.tableView.state;
         state.frame.origin.x = self.columnHeaderView.state.frame.size.width - self.intercellSpacing.width;
-        state.frame.size.width = (self.frame.size.width - horizontalInset) - (self.columnHeaderView.state.frame.size.width - self.intercellSpacing.width);
+        state.frame.size.width = (viewWidth - horizontalInset) - (self.columnHeaderView.state.frame.size.width - self.intercellSpacing.width);
         self.tableView.state = state;
         
         if (self.circularScrollingOptions.headerStyle != HeaderStyle_rowHeaderStartsFirstColumn) {
@@ -342,12 +347,12 @@
         }
     } else {
         State state = self.tableView.state;
-        state.frame.size.width = self.frame.size.width - horizontalInset;
+        state.frame.size.width = viewWidth - horizontalInset;
     }
     if (self.frozenRows > 0) {
         State state = self.tableView.state;
         state.frame.origin.y = self.rowHeaderView.state.frame.size.height - self.intercellSpacing.height;
-        state.frame.size.height = (self.frame.size.height - verticalInset) - (self.rowHeaderView.state.frame.size.height - self.intercellSpacing.height);
+        state.frame.size.height = (viewHeight - verticalInset) - (self.rowHeaderView.state.frame.size.height - self.intercellSpacing.height);
         self.tableView.state = state;
         
         if (self.circularScrollingOptions.headerStyle != HeaderStyle_columnHeaderStartsFirstRow) {
@@ -358,7 +363,7 @@
         }
     } else {
         State state = self.tableView.state;
-        state.frame.size.height = self.frame.size.height - verticalInset;
+        state.frame.size.height = viewHeight - verticalInset;
     }
     
     [self resetOverlayViewContentSize:contentInset];
@@ -393,6 +398,7 @@
         [self.rootView addSubview:self.rowHeaderView];
         [self.rootView addSubview:self.cornerView];
     }
+  
 }
 
 - (NSInteger)findIndex:(NSArray<NSNumber *> *)records offset:(CGFloat)offset {

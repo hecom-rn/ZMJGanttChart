@@ -336,7 +336,7 @@
     if (self.frozenColumns > 0) {
         State state = self.tableView.state;
         state.frame.origin.x = self.columnHeaderView.state.frame.size.width - self.intercellSpacing.width;
-        state.frame.size.width = (viewWidth - horizontalInset) - (self.columnHeaderView.state.frame.size.width - self.intercellSpacing.width);
+        state.frame.size.width = MAX(0, (viewWidth - horizontalInset) - (self.columnHeaderView.state.frame.size.width - self.intercellSpacing.width));
         self.tableView.state = state;
         
         if (self.circularScrollingOptions.headerStyle != HeaderStyle_rowHeaderStartsFirstColumn) {
@@ -352,7 +352,7 @@
     if (self.frozenRows > 0) {
         State state = self.tableView.state;
         state.frame.origin.y = self.rowHeaderView.state.frame.size.height - self.intercellSpacing.height;
-        state.frame.size.height = (viewHeight - verticalInset) - (self.rowHeaderView.state.frame.size.height - self.intercellSpacing.height);
+        state.frame.size.height = MAX(0, (viewHeight - verticalInset) - (self.rowHeaderView.state.frame.size.height - self.intercellSpacing.height));
         self.tableView.state = state;
         
         if (self.circularScrollingOptions.headerStyle != HeaderStyle_columnHeaderStartsFirstRow) {

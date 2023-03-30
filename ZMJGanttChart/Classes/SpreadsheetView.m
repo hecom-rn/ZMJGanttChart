@@ -814,9 +814,9 @@
     return _tableHeaderView;
 }
 
-- (OverlayView *)overlayView {
+- (UIScrollView *)overlayView {
     if (!_overlayView) {
-        _overlayView = [OverlayView new];
+        _overlayView = [UIScrollView new];
     }
     return _overlayView;
 }

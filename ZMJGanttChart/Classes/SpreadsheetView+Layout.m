@@ -60,6 +60,8 @@
         weak_self.columnHeaderView.delegate = weak_self;
         weak_self.rowHeaderView.delegate    = weak_self;
         weak_self.cornerView.delegate       = weak_self;
+
+        ![weak_self.delegate respondsToSelector:@selector(spreadsheetViewDidLayout:)]?: [weak_self.delegate spreadsheetViewDidLayout:weak_self];
     };
     
     [self reloadDataIfNeeded];

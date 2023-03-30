@@ -89,4 +89,7 @@
 ///   - spreadsheetView: The spreadsheet view object that is notifying you of the selection change.
 ///   - indexPath: The index path of the cell that was deselected.
 - (void)spreadsheetView:(SpreadsheetView *)spreadsheetView didDeselectItemAt:(NSIndexPath *)indexPath;
+
+// layout subView complete
+- (void)spreadsheetViewDidLayout:(SpreadsheetView *)spreadsheetView;
 @end

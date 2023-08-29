@@ -390,14 +390,14 @@
     [self.cornerView removeFromSuperview];
     
     if (self.circularScrollingOptions.headerStyle == HeaderStyle_columnHeaderStartsFirstRow) {
-        [self.rootView addSubview:self.rowHeaderView];
-        [self.rootView addSubview:self.columnHeaderView];
         [self.rootView addSubview:self.cornerView];
+        [self.rootView addSubview:self.columnHeaderView];
+        [self.rootView addSubview:self.rowHeaderView];
         [self.rootView addSubview:self.tableView];
     } else {
+        [self.rootView addSubview:self.cornerView];
         [self.rootView addSubview:self.columnHeaderView];
         [self.rootView addSubview:self.rowHeaderView];
-        [self.rootView addSubview:self.cornerView];
         [self.rootView addSubview:self.tableView];
     }
   

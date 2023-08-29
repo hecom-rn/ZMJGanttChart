@@ -139,10 +139,10 @@
     self.overlayView.autoresizingMask    = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.overlayView.autoresizesSubviews = NO;
     self.overlayView.userInteractionEnabled = NO;
-    
+
+    [self.rootView addSubview:self.cornerView];
     [self.rootView addSubview:self.columnHeaderView];
     [self.rootView addSubview:self.rowHeaderView];
-    [self.rootView addSubview:self.cornerView];
     [self.rootView addSubview:self.tableView];
     [super addSubview:self.overlayView];
     

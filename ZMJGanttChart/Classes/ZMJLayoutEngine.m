@@ -25,8 +25,10 @@
         _numberOfRows    = 0;
         _frozenColumns   = 0;
         _frozenRows      = 0;
+        _frozenFooterColumns = 0;
         
         _frozenColumnWidth = 0.f;
+        _frozenFooterColumns = 0.f;
         _frozenRowHeight   = 0.f;
         _columnWidth       = 0.f;
         _rowHeight         = 0.f;
@@ -43,15 +45,17 @@
 - (instancetype)initWithNumberOfColumns:(NSInteger)numberOfColumns
                            numberOfRows:(NSInteger)numberOfRows
                           frozenColumns:(NSInteger)frozenColumns
+                    frozenFooterColumns:(NSInteger)frozenFooterColumns
                              frozenRows:(NSInteger)frozenRows
                       frozenColumnWidth:(CGFloat)frozenColumnWidth
+                frozenColumnFooterWidth:(CGFloat)frozenColumnFooterWidth
                         frozenRowHeight:(CGFloat)frozenRowHeight
                             columnWidth:(CGFloat)columnWidth
                               rowHeight:(CGFloat)rowHeight
                        columnWidthCache:(NSArray<NSNumber *> *)columnWidthCache
                          rowHeightCache:(NSArray<NSNumber *> *)rowHeightCache
                             mergedCells:(NSArray<ZMJCellRange *> *)mergedCells
-                      mergedCellLayouts:(NSDictionary<Location *, ZMJCellRange *> *)mergedCellLayouts
+                      mergedCellLayouts:(NSDictionary<Location *, ZMJCellRange *> *)mergedCellLayouts;
 {
     self = [super init];
     if (self) {
@@ -59,7 +63,9 @@
         self.numberOfRows    = numberOfRows;
         self.frozenColumns   = frozenColumns;
         self.frozenRows      = frozenRows;
+        self.frozenFooterColumns = frozenFooterColumns;
         
+        self.frozenColumnFooterWidth = frozenColumnFooterWidth;
         self.frozenColumnWidth = frozenColumnWidth;
         self.frozenRowHeight   = frozenRowHeight;
         self.columnWidth  = columnWidth;
@@ -165,7 +171,7 @@
 }
 
 - (void)layout {
-    if (_startColumn == _columnCount || _startRow == _rowCount) {
+    if (_startColumn >= _columnCount || _startRow >= _rowCount) {
         return;
     }
     NSInteger startRowIndex = [self.spreadsheetView findIndex:self.scrollView.rowRecords offset:self.visibleRect.origin.y - self.insets.y];
@@ -173,7 +179,7 @@
     cellOrigin.y = self.insets.y + self.scrollView.rowRecords[startRowIndex].floatValue + self.intercellSpacing.height;
     self.cellOrigin = cellOrigin;
     
-    for (NSInteger rowIndex = startRowIndex+self.startRow; rowIndex < self.rowCount; rowIndex++) {
+    for (NSInteger rowIndex = startRowIndex + self.startRow; rowIndex < self.rowCount; rowIndex++) {
         NSInteger row = rowIndex % self.numberOfRows;
         if ((self.circularScrollingOptions.tableStyle & TableStyle_rowHeaderNotRepeated) &&
             self.startRow > 0 &&

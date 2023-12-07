@@ -33,6 +33,19 @@
                                           afterScreenUpdates:afterUpdates
                                                withCapInsets:capInsets];
     }
+    
+    if (CGRectIntersectsRect(self.columFooterView.frame, [self.columFooterView convertRect:rect toView:self])) {
+        return [self.columFooterView resizableSnapshotViewFromRect:CGRectOffset(rect, -self.columFooterView.frame.origin.x, -self.columFooterView.frame.origin.y)
+                                          afterScreenUpdates:afterUpdates
+                                               withCapInsets:capInsets];
+    }
+    
+    if (CGRectIntersectsRect(self.rtCornerView.frame, [self.rtCornerView convertRect:rect toView:self])) {
+        return [self.rtCornerView resizableSnapshotViewFromRect:CGRectOffset(rect, -self.rtCornerView.frame.origin.x, -self.rtCornerView.frame.origin.y)
+                                          afterScreenUpdates:afterUpdates
+                                               withCapInsets:capInsets];
+    }
+    
     return [super resizableSnapshotViewFromRect:rect
                              afterScreenUpdates:afterUpdates
                                   withCapInsets:capInsets];

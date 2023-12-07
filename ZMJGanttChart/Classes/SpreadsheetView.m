@@ -119,6 +119,23 @@
     self.columnHeaderView.delegate = self;
     
     frame = self.bounds;
+    frame.size.width = 0;
+    self.columFooterView.frame = frame;
+    self.columFooterView.scrollEnabled = NO;
+    self.columFooterView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    self.columFooterView.autoresizesSubviews = NO;
+    self.columFooterView.showsHorizontalScrollIndicator = NO;
+    self.columFooterView.showsVerticalScrollIndicator = NO;
+    self.columFooterView.hidden = YES;
+    self.columFooterView.delegate = self;
+    
+    self.rtCornerView.autoresizesSubviews = NO;
+    self.rtCornerView.hidden = YES;
+    self.rtCornerView.scrollEnabled = NO;
+    self.rtCornerView.userInteractionEnabled = YES;
+    self.rtCornerView.delegate = self;
+    
+    frame = self.bounds;
     frame.size.height = 0;
     self.rowHeaderView.frame = frame;
     self.rowHeaderView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -143,11 +160,13 @@
     [self.rootView addSubview:self.rowHeaderView];
     [self.rootView addSubview:self.tableView];
     [self.rootView addSubview:self.cornerView];
+    [self.rootView addSubview:self.rtCornerView];
+    [self.rootView addSubview:self.columFooterView];
     [self.rootView addSubview:self.columnHeaderView];
     [super addSubview:self.overlayView];
     
     __weak typeof(self)weak_self = self;
-    [@[self.tableView, self.columnHeaderView, self.rowHeaderView, self.cornerView, self.overlayView] enumerateObjectsUsingBlock:^(UIScrollView* _Nonnull scrollView, NSUInteger idx, BOOL * _Nonnull stop) {
+    [@[self.tableView, self.columnHeaderView, self.rowHeaderView, self.cornerView, self.rtCornerView, self.columFooterView, self.overlayView] enumerateObjectsUsingBlock:^(UIScrollView* _Nonnull scrollView, NSUInteger idx, BOOL * _Nonnull stop) {
         if (@available(iOS 11.0, *)) {
             scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         }
@@ -168,16 +187,22 @@
     self.centerOffset = [self calculateCenterOffset];
     
     self.cornerView.layoutAttributes       = [self layoutAttributeForCornerView];
+    self.rtCornerView.layoutAttributes     = [self layoutAttributeForRtCornerView];
+    self.columFooterView.layoutAttributes  = [self layoutAttributeForColumnFooterView];
     self.columnHeaderView.layoutAttributes = [self layoutAttributeForColumnHeaderView];
     self.rowHeaderView.layoutAttributes    = [self layoutAttributeForRowHeaderView];
     self.tableView.layoutAttributes        = [self layoutAttributeForTableView];
     
     [self.cornerView       resetReusableObjects];
+    [self.rtCornerView     resetReusableObjects];
+    [self.columFooterView  resetReusableObjects];
     [self.columnHeaderView resetReusableObjects];
     [self.rowHeaderView    resetReusableObjects];
     [self.tableView        resetReusableObjects];
     
     [self resetContentSize:self.cornerView];
+    [self resetContentSize:self.rtCornerView];
+    [self resetContentSize:self.columFooterView];
     [self resetContentSize:self.columnHeaderView];
     [self resetContentSize:self.rowHeaderView];
     [self resetContentSize:self.tableView];
@@ -439,6 +464,16 @@
     {
         row = indexPath.row;
         column = indexPath.column;
+    } else if (CGRectContainsPoint([self.rtCornerView convertRect:self.rtCornerView.bounds toView:self], point) &&
+               (indexPath = [self indexPathForItemAt:point scrollView:self.rtCornerView]))
+    {
+        row = indexPath.row;
+        column = indexPath.column;
+    } else if (CGRectContainsPoint([self.columFooterView convertRect:self.columFooterView.bounds toView:self], point) &&
+               (indexPath = [self indexPathForItemAt:point scrollView:self.columFooterView]))
+    {
+        row = indexPath.row + self.frozenRows;
+        column = indexPath.column;
     } else {
         return nil;
     }
@@ -537,6 +572,22 @@
         return cell;
     }
     
+    if ((cell = [[self.rtCornerView.visibleCells.pairs wbg_filter:^BOOL(Address * _Nonnull key, ZMJCell * _Nonnull obj) {
+        return key.row == indexPath.row && key.column == indexPath.column;
+    }] wbg_toArray:^id _Nonnull(Address * _Nonnull key, ZMJCell * _Nonnull obj) {
+        return obj;
+    }].firstObject)) {
+        return cell;
+    }
+    
+    if ((cell = [[self.columFooterView.visibleCells.pairs wbg_filter:^BOOL(Address * _Nonnull key, ZMJCell * _Nonnull obj) {
+        return key.row == indexPath.row && key.column == indexPath.column;
+    }] wbg_toArray:^id _Nonnull(Address * _Nonnull key, ZMJCell * _Nonnull obj) {
+        return obj;
+    }].firstObject)) {
+        return cell;
+    }
+    
     return nil;
 }
 
@@ -558,6 +609,16 @@
         return obj;
     }]];
     [cells addObjectsFromArray:[[self.cornerView.visibleCells.pairs wbg_filter:^BOOL(Address * _Nonnull key, ZMJCell * _Nonnull obj) {
+        return key.row == indexPath.row && key.column == indexPath.column;
+    }] wbg_toArray:^id _Nonnull(Address * _Nonnull key, ZMJCell * _Nonnull obj) {
+        return obj;
+    }]];
+    [cells addObjectsFromArray:[[self.rtCornerView.visibleCells.pairs wbg_filter:^BOOL(Address * _Nonnull key, ZMJCell * _Nonnull obj) {
+        return key.row == indexPath.row && key.column == indexPath.column;
+    }] wbg_toArray:^id _Nonnull(Address * _Nonnull key, ZMJCell * _Nonnull obj) {
+        return obj;
+    }]];
+    [cells addObjectsFromArray:[[self.columFooterView.visibleCells.pairs wbg_filter:^BOOL(Address * _Nonnull key, ZMJCell * _Nonnull obj) {
         return key.row == indexPath.row && key.column == indexPath.column;
     }] wbg_toArray:^id _Nonnull(Address * _Nonnull key, ZMJCell * _Nonnull obj) {
         return obj;
@@ -629,7 +690,10 @@
     [self resetTouchHandlers:@[self.tableView,
                                self.columnHeaderView,
                                self.rowHeaderView,
-                               self.cornerView]];
+                               self.cornerView,
+                               self.rtCornerView,
+                               self.columFooterView
+                             ]];
     [self set_needsReload];
 }
 
@@ -697,8 +761,10 @@
 - (NSArray<ZMJCell *> *)visibleCells {
     NSMutableArray<ZMJCell *> *cells = [NSMutableArray new];
     [cells addObjectsFromArray:self.columnHeaderView.visibleCells.array];
+    [cells addObjectsFromArray:self.columFooterView.visibleCells.array];
     [cells addObjectsFromArray:self.rowHeaderView.visibleCells.array];
     [cells addObjectsFromArray:self.cornerView.visibleCells.array];
+    [cells addObjectsFromArray:self.rtCornerView.visibleCells.array];
     [cells addObjectsFromArray:self.tableView.visibleCells.array];
     [cells sortUsingComparator:^NSComparisonResult(ZMJCell*  _Nonnull obj1, ZMJCell*  _Nonnull obj2) {
         return [obj1 compare:obj2];
@@ -789,6 +855,9 @@
 - (NSInteger)frozenColumns {
     return self.layoutProperties.frozenColumns;
 }
+- (NSInteger)frozenFooterColumns {
+    return self.layoutProperties.frozenFooterColumns;
+}
 - (NSInteger)frozenRows {
     return self.layoutProperties.frozenRows;
 }
@@ -812,6 +881,20 @@
         _tableHeaderView = [UIScrollView new];
     }
     return _tableHeaderView;
+}
+
+- (UIScrollView *)rtCornerView {
+    if (!_rtCornerView) {
+        _rtCornerView = [ZMJScrollView new];
+    }
+    return _rtCornerView;
+}
+
+- (UIScrollView *)columFooterView {
+    if (!_columFooterView) {
+        _columFooterView = [ZMJScrollView new];
+    }
+    return _columFooterView;
 }
 
 - (UIScrollView *)overlayView {

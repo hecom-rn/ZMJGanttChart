@@ -18,6 +18,8 @@
     
     self.tableView.delegate         = nil;
     self.columnHeaderView.delegate  = nil;
+    self.columFooterView.delegate   = nil;
+    self.rtCornerView.delegate      = nil;
     self.rowHeaderView.delegate     = nil;
     self.cornerView.delegate        = nil;
     
@@ -27,11 +29,23 @@
     state.contentOffset = self.cornerView.contentOffset;
     self.cornerView.state = state;
     
+    state = self.rtCornerView.state;
+    state.frame = self.rtCornerView.frame;
+    state.contentSize = self.rtCornerView.contentSize;
+    state.contentOffset = self.rtCornerView.contentOffset;
+    self.rtCornerView.state = state;
+    
     state = self.columnHeaderView.state;
     state.frame = self.columnHeaderView.frame;
     state.contentSize = self.columnHeaderView.contentSize;
     state.contentOffset = self.columnHeaderView.contentOffset;
     self.columnHeaderView.state = state;
+    
+    state = self.columFooterView.state;
+    state.frame = self.columFooterView.frame;
+    state.contentSize = self.columFooterView.contentSize;
+    state.contentOffset = self.columFooterView.contentOffset;
+    self.columFooterView.state = state;
     
     state = self.rowHeaderView.state;
     state.frame = self.rowHeaderView.frame;
@@ -47,16 +61,22 @@
     __weak typeof(self)weak_self = self;
     void(^defer)(void) = ^(void){
         weak_self.cornerView.contentSize       = weak_self.cornerView.state.contentSize;
+        weak_self.columFooterView.contentSize  = weak_self.columFooterView.state.contentSize;
+        weak_self.rtCornerView.contentSize     = weak_self.rtCornerView.state.contentSize;
         weak_self.columnHeaderView.contentSize = weak_self.columnHeaderView.state.contentSize;
         weak_self.rowHeaderView.contentSize    = weak_self.rowHeaderView.state.contentSize;
         weak_self.tableView.contentSize        = weak_self.tableView.state.contentSize;
         
         weak_self.cornerView.contentOffset       = weak_self.cornerView.state.contentOffset;
+        weak_self.rtCornerView.contentOffset     = weak_self.rtCornerView.state.contentOffset;
+        weak_self.columFooterView.contentOffset  = weak_self.columFooterView.state.contentOffset;
         weak_self.columnHeaderView.contentOffset = weak_self.columnHeaderView.state.contentOffset;
         weak_self.rowHeaderView.contentOffset    = weak_self.rowHeaderView.state.contentOffset;
         weak_self.tableView.contentOffset        = weak_self.tableView.state.contentOffset;
         
         weak_self.tableView.delegate        = weak_self;
+        weak_self.rtCornerView.delegate     = weak_self;
+        weak_self.columFooterView.delegate  = weak_self;
         weak_self.columnHeaderView.delegate = weak_self;
         weak_self.rowHeaderView.delegate    = weak_self;
         weak_self.cornerView.delegate       = weak_self;
@@ -78,8 +98,10 @@
     }
     
     [self layoutCornerView];
+    [self layoutRtCornerView];
     [self layoutRowHeaderView];
     [self layoutColumnHeaderView];
+    [self layoutColumnFooterView];
     [self layoutTableView];
     // end function
     defer();
@@ -93,6 +115,18 @@
     layout.numberOfColumns = self.frozenColumns;
     layout.numberOfRows = self.frozenRows;
     layout.columnCount = self.frozenColumns;
+    layout.rowCount = self.frozenRows;
+    layout.insets = CGPointZero;
+    return layout;
+}
+
+- (LayoutAttributes)layoutAttributeForRtCornerView {
+    LayoutAttributes layout;
+    layout.startColumn = self.layoutProperties.numberOfColumns - self.frozenFooterColumns;
+    layout.startRow = 0;
+    layout.numberOfColumns = self.frozenFooterColumns;
+    layout.numberOfRows = self.frozenRows;
+    layout.columnCount = self.numberOfColumns;
     layout.rowCount = self.frozenRows;
     layout.insets = CGPointZero;
     return layout;
@@ -116,7 +150,26 @@
     return layout;
 }
 
+- (LayoutAttributes)layoutAttributeForColumnFooterView {
+    CGPoint insets =  self.circularScrollingOptions.headerStyle == HeaderStyle_columnHeaderStartsFirstRow ?
+    CGPointMake(0, [(NSNumber *)[[self.layoutProperties.rowHeightCache subarrayWithRange:NSMakeRange(0, self.frozenRows)] wbg_reduce:@(0) with:^NSNumber* _Nonnull(NSNumber* _Nullable prev, NSNumber * _Nonnull curr) {
+        return @(prev.floatValue + curr.floatValue);
+    }] floatValue] + self.intercellSpacing.height * self.layoutProperties.frozenRows) :
+    CGPointZero;
+    
+    LayoutAttributes layout;
+    layout.startColumn = self.layoutProperties.numberOfColumns - self.frozenFooterColumns;
+    layout.startRow = self.layoutProperties.frozenRows;
+    layout.numberOfColumns = self.layoutProperties.numberOfColumns;
+    layout.numberOfRows = self.layoutProperties.numberOfRows;
+    layout.columnCount = self.layoutProperties.numberOfColumns;
+    layout.rowCount = self.layoutProperties.numberOfRows * self.circularScrollScalingFactor.vertical;
+    layout.insets = insets;
+    return layout;
+}
+
 - (LayoutAttributes)layoutAttributeForRowHeaderView {
+    // TODO: frozenColumns
     CGPoint insets =  self.circularScrollingOptions.headerStyle == HeaderStyle_rowHeaderStartsFirstColumn ?
     CGPointMake([(NSNumber *)[[self.layoutProperties.columnWidthCache subarrayWithRange:NSMakeRange(0, self.frozenColumns)] wbg_reduce:@(0) with:^NSNumber* _Nonnull(NSNumber* _Nullable prev, NSNumber * _Nonnull curr) {
         return @(prev.floatValue + curr.floatValue);
@@ -150,7 +203,6 @@
     if (self.dataSource == nil) {
         return [ZMJLayoutProperties new];
     }
-
     NSInteger numberOfColumns = [self.dataSource respondsToSelector:@selector(numberOfColumns:)] ?
                                 [self.dataSource numberOfColumns:self] :
                                 0;
@@ -161,6 +213,9 @@
     NSInteger frozenColumns = [self.dataSource respondsToSelector:@selector(frozenColumns:)] ?
                               [self.dataSource frozenColumns:self] :
                               0;
+    NSInteger frozenFooterColums = [self.dataSource respondsToSelector:@selector(frozenFooterColumns:)] ?
+                                [self.dataSource frozenFooterColumns:self] :
+                                0;
     NSInteger frozenRows    = [self.dataSource respondsToSelector:@selector(frozenRows:)] ?
                               [self.dataSource frozenRows:self] :
                               0;
@@ -173,6 +228,9 @@
     if (frozenColumns < 0) {
         [NSException exceptionWithName:@"" reason:@"`frozenColumns(in:)` must return a value greater than or equal to 0" userInfo:nil];
     }
+    if (frozenFooterColums < 0) {
+        [NSException exceptionWithName:@"" reason:@"`frozenFooterColums(in:)` must return a value greater than or equal to 0" userInfo:nil];
+    }
     if (frozenRows < 0) {
         [NSException exceptionWithName:@"" reason:@"`frozenRows(in:)` must return a value greater than or equal to 0" userInfo:nil];
     }
@@ -184,7 +242,7 @@
         
         for (ZMJCellRange *mergedCell in mergedCells) {
             if ((mergedCell.from.column < frozenColumns && mergedCell.to.column >= frozenColumns) ||
-                (mergedCell.from.row < frozenRows && mergedCell.to.row >= frozenRows)) {
+                (mergedCell.from.row < frozenRows && mergedCell.to.row >= frozenRows) || (mergedCell.from.column < frozenFooterColums && mergedCell.to.column >= frozenFooterColums)) {
                 [NSException exceptionWithName:@"" reason:@"`cannot merge frozen and non-frozen column or rows" userInfo:nil];
             }
             for (NSInteger column = mergedCell.from.column; column <= mergedCell.to.column; column++ ) {
@@ -221,12 +279,18 @@
         frozenColumnWidth += width;
     }
     CGFloat tableWidth = 0;
-    for (NSInteger column = frozenColumns; column < numberOfColumns; column++) {
+    for (NSInteger column = frozenColumns; column < numberOfColumns - frozenFooterColums; column++) {
         CGFloat width = [self.dataSource spreadsheetView:self widthForColumn:column];
         [columnWidthCache addObject:@(width)];
         tableWidth += width;
     }
-    CGFloat columnWidth = frozenColumnWidth + tableWidth;
+    CGFloat frozenColumnFooterWidth = 0;
+    for (NSInteger column = numberOfColumns - frozenFooterColums; column < numberOfColumns; column++) {
+        CGFloat width = [self.dataSource spreadsheetView:self widthForColumn:column];
+        [columnWidthCache addObject:@(width)];
+        frozenColumnFooterWidth += width;
+    }
+    CGFloat columnWidth = frozenColumnWidth + tableWidth + frozenColumnFooterWidth;
     
     NSMutableArray<NSNumber *> *rowHeightCache = [NSMutableArray array];
     CGFloat frozenRowHeight = 0;
@@ -246,8 +310,10 @@
     return [[ZMJLayoutProperties alloc] initWithNumberOfColumns:numberOfColumns
                                                    numberOfRows:numberOfRows
                                                   frozenColumns:frozenColumns
+                                            frozenFooterColumns:frozenFooterColums
                                                      frozenRows:frozenRows
                                               frozenColumnWidth:frozenColumnWidth
+                                        frozenColumnFooterWidth:frozenColumnFooterWidth
                                                 frozenRowHeight:frozenRowHeight
                                                     columnWidth:columnWidth
                                                       rowHeight:rowHeight
@@ -298,7 +364,9 @@
     __weak typeof(self)weak_self = self;
     void (^defer)(void) = ^(void) {
         weak_self.cornerView.frame       = weak_self.cornerView.state.frame;
+        weak_self.rtCornerView.frame     = weak_self.rtCornerView.state.frame;
         weak_self.columnHeaderView.frame = weak_self.columnHeaderView.state.frame;
+        weak_self.columFooterView.frame  = weak_self.columFooterView.state.frame;
         weak_self.rowHeaderView.frame    = weak_self.rowHeaderView.state.frame;
         weak_self.tableView.frame        = weak_self.tableView.state.frame;
     };
@@ -323,9 +391,17 @@
     state.frame = CGRectMake(0, 0, self.cornerView.state.contentSize.width, self.cornerView.state.contentSize.height);
     self.cornerView.state = state;
     
+    state = self.rtCornerView.state;
+    state.frame = CGRectMake(0, 0, self.rtCornerView.state.contentSize.width, self.rtCornerView.state.contentSize.height);
+    self.rtCornerView.state = state;
+    
     state = self.columnHeaderView.state;
     state.frame = CGRectMake(0, 0, self.columnHeaderView.state.contentSize.width, viewHeight);
     self.columnHeaderView.state = state;
+    
+    state = self.columFooterView.state;
+    state.frame = CGRectMake(0, 0, self.columFooterView.state.contentSize.width, viewHeight);
+    self.columFooterView.state = state;
     
     state = self.rowHeaderView.state;
     state.frame = CGRectMake(0, 0, viewWidth, self.rowHeaderView.state.contentSize.height);
@@ -335,10 +411,10 @@
     state.frame = CGRectMake(0, 0, viewWidth, viewHeight);
     self.tableView.state = state;
     
-    if (self.frozenColumns > 0) {
+    if (self.frozenColumns > 0 || self.frozenFooterColumns > 0 ) {
         State state = self.tableView.state;
         state.frame.origin.x = self.columnHeaderView.state.frame.size.width - self.intercellSpacing.width;
-        state.frame.size.width = MAX(0, (viewWidth - horizontalInset) - (self.columnHeaderView.state.frame.size.width - self.intercellSpacing.width));
+        state.frame.size.width = MAX(0, (viewWidth - horizontalInset) - (self.columnHeaderView.state.frame.size.width  - self.intercellSpacing.width) - (self.columFooterView.state.frame.size.width  - self.intercellSpacing.width));
         self.tableView.state = state;
         
         if (self.circularScrollingOptions.headerStyle != HeaderStyle_rowHeaderStartsFirstColumn) {
@@ -346,6 +422,14 @@
             rhv_state.frame.origin.x = self.tableView.state.frame.origin.x;
             rhv_state.frame.size.width = self.tableView.state.frame.size.width;
             self.rowHeaderView.state = rhv_state;
+            
+            rhv_state = self.rtCornerView.state;
+            rhv_state.frame.origin.x = self.tableView.state.frame.origin.x + self.tableView.state.frame.size.width;
+            self.rtCornerView.state = rhv_state;
+            
+            rhv_state = self.columFooterView.state;
+            rhv_state.frame.origin.x = self.tableView.state.frame.origin.x + self.tableView.state.frame.size.width;
+            self.columFooterView.state = rhv_state;
         }
     } else {
         State state = self.tableView.state;
@@ -362,6 +446,11 @@
             chv_state.frame.origin.y = self.tableView.state.frame.origin.y;
             chv_state.frame.size.height = self.tableView.state.frame.size.height;
             self.columnHeaderView.state = chv_state;
+            
+            chv_state = self.columFooterView.state;
+            chv_state.frame.origin.y = self.tableView.state.frame.origin.y;
+            chv_state.frame.size.height = self.tableView.state.frame.size.height;
+            self.columFooterView.state = chv_state;
         }
     } else {
         State state = self.tableView.state;
@@ -393,11 +482,15 @@
         [self.rootView addSubview:self.rowHeaderView];
         [self.rootView addSubview:self.tableView];
         [self.rootView addSubview:self.cornerView];
+        [self.rootView addSubview:self.rtCornerView];
+        [self.rootView addSubview:self.columFooterView];
         [self.rootView addSubview:self.columnHeaderView];
     } else {
         [self.rootView addSubview:self.rowHeaderView];
         [self.rootView addSubview:self.tableView];
         [self.rootView addSubview:self.cornerView];
+        [self.rootView addSubview:self.rtCornerView];
+        [self.rootView addSubview:self.columFooterView];
         [self.rootView addSubview:self.columnHeaderView];
     }
   
@@ -423,6 +516,16 @@
     [self layout:self.cornerView];
 }
 
+- (void)layoutRtCornerView {
+    if (self.frozenFooterColumns <= 0 || self.frozenRows <= 0 || self.circularScrollingOptions.headerStyle != HeaderStyle_none) {
+        self.rtCornerView.hidden = YES;
+        return;
+    }
+    self.rtCornerView.hidden = NO;
+    [self layout:self.rtCornerView];
+}
+
+
 - (void)layoutColumnHeaderView {
     if (self.frozenColumns <= 0) {
         self.columnHeaderView.hidden = YES;
@@ -430,6 +533,15 @@
     }
     self.columnHeaderView.hidden = NO;
     [self layout:self.columnHeaderView];
+}
+
+- (void)layoutColumnFooterView {
+    if (self.frozenFooterColumns <= 0) {
+        self.columFooterView.hidden = YES;
+        return;
+    }
+    self.columFooterView.hidden = NO;
+    [self layout:self.columFooterView];
 }
 
 - (void)layoutRowHeaderView {

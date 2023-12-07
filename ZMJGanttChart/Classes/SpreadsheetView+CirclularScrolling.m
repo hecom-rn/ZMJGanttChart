@@ -20,9 +20,13 @@
 }
 
 - (void)scrollToVerticalCenter {
-    State s = self.rowHeaderView.state;
+    State s = self.columnHeaderView.state;
     s.contentOffset.y = self.centerOffset.y;
     self.columnHeaderView.state = s;
+    
+    s = self.columFooterView.state;
+    s.contentOffset.y = self.centerOffset.y;
+    self.columFooterView.state = s;
     
     s = self.tableView.state;
     s.contentOffset.y = self.centerOffset.y;
@@ -64,6 +68,10 @@
             State s = self.columnHeaderView.state;
             s.contentOffset.y = distance;
             self.columnHeaderView.state = s;
+            
+            s = self.columFooterView.state;
+            s.contentOffset.y = distance;
+            self.columFooterView.state = s;
             
             s = self.tableView.state;
             s.contentOffset.y = distance;

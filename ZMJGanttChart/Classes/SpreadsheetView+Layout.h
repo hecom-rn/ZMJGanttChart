@@ -12,7 +12,9 @@
 @interface SpreadsheetView (Layout)
 
 - (LayoutAttributes)layoutAttributeForCornerView;
+- (LayoutAttributes)layoutAttributeForRtCornerView;
 - (LayoutAttributes)layoutAttributeForColumnHeaderView;
+- (LayoutAttributes)layoutAttributeForColumnFooterView;
 - (LayoutAttributes)layoutAttributeForRowHeaderView;
 - (LayoutAttributes)layoutAttributeForTableView;
 - (ZMJLayoutProperties *)resetLayoutProperties;

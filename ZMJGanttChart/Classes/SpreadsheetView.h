@@ -193,6 +193,7 @@ CircularScrollScalingFactorMake(NSInteger horizontal, NSInteger vertical)
 @property (nonatomic, assign, readonly) NSInteger numberOfColumns;
 @property (nonatomic, assign, readonly) NSInteger numberOfRows;
 @property (nonatomic, assign, readonly) NSInteger frozenColumns;
+@property (nonatomic, assign, readonly) NSInteger frozenFooterColumns;
 @property (nonatomic, assign, readonly) NSInteger frozenRows;
 @property (nonatomic, assign, readonly) NSArray<ZMJCellRange *> *mergedCells;
 
@@ -238,6 +239,10 @@ CircularScrollScalingFactorMake(NSInteger horizontal, NSInteger vertical)
 @property (nonatomic, strong) ZMJScrollView *rowHeaderView;
 @property (nonatomic, strong) ZMJScrollView *cornerView;
 @property (nonatomic, strong) ZMJScrollView *tableView;
+
+@property (nonatomic, strong) ZMJScrollView *rtCornerView;
+@property (nonatomic, strong) ZMJScrollView *columFooterView;
+
 @property (nonatomic, strong) UIScrollView  *overlayView;
 @property (nonatomic, strong) UIScrollView  *rootView;
 @property (nonatomic, strong) ZMJLayoutProperties *layoutProperties;

@@ -71,4 +71,10 @@
 /// - Parameter spreadsheetView: The spreadsheet view requesting this information.
 /// - Returns: The number of rows to be frozen
 - (NSInteger)frozenRows:(SpreadsheetView *)spreadsheetView;
+
+/// Asks your data source object for the number of footer columns to be frozen as a fixed column end in the spreadsheetView.
+///
+/// - Parameter spreadsheetView: The spreadsheet view requesting this information.
+/// - Returns: The number of columns to be frozen
+- (NSInteger)frozenFooterColumns:(SpreadsheetView *)spreadsheetView;
 @end

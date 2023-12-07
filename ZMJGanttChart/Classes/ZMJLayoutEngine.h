@@ -18,9 +18,11 @@
 @property (nonatomic, assign) NSInteger numberOfColumns;
 @property (nonatomic, assign) NSInteger numberOfRows;
 @property (nonatomic, assign) NSInteger frozenColumns;
+@property (nonatomic, assign) NSInteger frozenFooterColumns;
 @property (nonatomic, assign) NSInteger frozenRows;
 
 @property (nonatomic, assign) CGFloat frozenColumnWidth;
+@property (nonatomic, assign) CGFloat frozenColumnFooterWidth;
 @property (nonatomic, assign) CGFloat frozenRowHeight;
 @property (nonatomic, assign) CGFloat columnWidth;
 @property (nonatomic, assign) CGFloat rowHeight;
@@ -34,8 +36,10 @@
 - (instancetype)initWithNumberOfColumns:(NSInteger)numberOfColumns
                            numberOfRows:(NSInteger)numberOfRows
                           frozenColumns:(NSInteger)frozenColumns
+                    frozenFooterColumns:(NSInteger)frozenFooterColumns
                              frozenRows:(NSInteger)frozenRows
                       frozenColumnWidth:(CGFloat)frozenColumnWidth
+                frozenColumnFooterWidth:(CGFloat)frozenColumnFooterWidth
                         frozenRowHeight:(CGFloat)frozenRowHeight
                             columnWidth:(CGFloat)columnWidth
                               rowHeight:(CGFloat)rowHeight

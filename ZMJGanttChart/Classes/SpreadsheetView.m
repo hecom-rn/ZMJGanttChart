@@ -71,19 +71,11 @@
 - (void)setShowCloumnForzenShadow:(BOOL)showCloumnForzenShadow {
     _showCloumnForzenShadow = showCloumnForzenShadow;
     if (showCloumnForzenShadow) {
-        CALayer *shadowLayer = self.columnHeaderView.layer;
-        shadowLayer.shadowColor = [UIColor blackColor].CGColor;
-        shadowLayer.shadowOpacity = 0.2f;
-        shadowLayer.shadowOffset = CGSizeMake(2,0);
-        shadowLayer.shadowRadius = 2;
-        shadowLayer.masksToBounds = NO;
-        
-        shadowLayer = self.cornerView.layer;
-        shadowLayer.shadowColor = [UIColor blackColor].CGColor;
-        shadowLayer.shadowOpacity = 0.2f;
-        shadowLayer.shadowOffset = CGSizeMake(2,0);
-        shadowLayer.shadowRadius = 2;
-        shadowLayer.masksToBounds = NO;
+        self.columnHeaderView.layer.masksToBounds = self.tableView.contentOffset.x < 2;
+        self.cornerView.layer.masksToBounds = self.tableView.contentOffset.x < 2;
+    } else {
+        self.columnHeaderView.layer.masksToBounds = YES;
+        self.cornerView.layer.masksToBounds = YES;
     }
 }
 
@@ -136,6 +128,12 @@
     self.columnHeaderView.showsVerticalScrollIndicator = NO;
     self.columnHeaderView.hidden = YES;
     self.columnHeaderView.delegate = self;
+    CALayer *shadowLayer = self.columnHeaderView.layer;
+    shadowLayer.shadowColor = [UIColor blackColor].CGColor;
+    shadowLayer.shadowOpacity = 0.2f;
+    shadowLayer.shadowOffset = CGSizeMake(2,0);
+    shadowLayer.shadowRadius = 2;
+    shadowLayer.masksToBounds = NO;
     
     frame = self.bounds;
     frame.size.height = 0;
@@ -147,13 +145,20 @@
     self.rowHeaderView.showsVerticalScrollIndicator = NO;
     self.rowHeaderView.hidden = YES;
     self.rowHeaderView.delegate = self;
+
     
     self.cornerView.autoresizesSubviews = NO;
     self.cornerView.hidden = YES;
     self.cornerView.scrollEnabled = NO;
     self.cornerView.userInteractionEnabled = YES;
     self.cornerView.delegate = self;
-    
+    shadowLayer = self.cornerView.layer;
+    shadowLayer.shadowColor = [UIColor blackColor].CGColor;
+    shadowLayer.shadowOpacity = 0.2f;
+    shadowLayer.shadowOffset = CGSizeMake(2,0);
+    shadowLayer.shadowRadius = 2;
+    shadowLayer.masksToBounds = NO;
+
     self.overlayView.frame = self.bounds;
     self.overlayView.autoresizingMask    = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.overlayView.autoresizesSubviews = NO;

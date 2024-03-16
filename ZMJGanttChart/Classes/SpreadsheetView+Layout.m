@@ -26,12 +26,27 @@
     state.contentSize = self.cornerView.contentSize;
     state.contentOffset = self.cornerView.contentOffset;
     self.cornerView.state = state;
-    
+    if (self.showCloumnForzenShadow) {
+        // Create a shadow path to only apply shadow on the left side
+        CGRect rect = self.cornerView.frame;
+        UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(rect.size.width -2/2, 0, 2, rect.size.height)];
+        self.cornerView.layer.shadowPath = shadowPath.CGPath;
+        self.cornerView.layer.masksToBounds = self.tableView.contentOffset.x < 2;
+    }
+
     state = self.columnHeaderView.state;
     state.frame = self.columnHeaderView.frame;
     state.contentSize = self.columnHeaderView.contentSize;
     state.contentOffset = self.columnHeaderView.contentOffset;
     self.columnHeaderView.state = state;
+    if (self.showCloumnForzenShadow) {
+        CGRect rect = self.columnHeaderView.frame;
+        // Create a shadow path to only apply shadow on the left side
+        CGFloat offset = MAX(0, self.columnHeaderView.contentOffset.y);
+        UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(rect.size.width -2/2, offset, 2,  state.contentSize.height - offset)];
+        self.columnHeaderView.layer.shadowPath = shadowPath.CGPath;
+        self.columnHeaderView.layer.masksToBounds = self.tableView.contentOffset.x < 2;
+    }
     
     state = self.rowHeaderView.state;
     state.frame = self.rowHeaderView.frame;
@@ -390,15 +405,15 @@
     [self.cornerView removeFromSuperview];
     
     if (self.circularScrollingOptions.headerStyle == HeaderStyle_columnHeaderStartsFirstRow) {
-        [self.rootView addSubview:self.rowHeaderView];
         [self.rootView addSubview:self.tableView];
-        [self.rootView addSubview:self.cornerView];
+        [self.rootView addSubview:self.rowHeaderView];
         [self.rootView addSubview:self.columnHeaderView];
+        [self.rootView addSubview:self.cornerView];
     } else {
-        [self.rootView addSubview:self.rowHeaderView];
         [self.rootView addSubview:self.tableView];
-        [self.rootView addSubview:self.cornerView];
+        [self.rootView addSubview:self.rowHeaderView];
         [self.rootView addSubview:self.columnHeaderView];
+        [self.rootView addSubview:self.cornerView];
     }
   
 }

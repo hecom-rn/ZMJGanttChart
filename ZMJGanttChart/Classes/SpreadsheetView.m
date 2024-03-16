@@ -68,6 +68,25 @@
     self.rowHeaderView.contentOffset = CGPointMake(self.rowHeaderView.contentOffset.x, self.tableView.contentOffset.y);
 }
 
+- (void)setShowCloumnForzenShadow:(BOOL)showCloumnForzenShadow {
+    _showCloumnForzenShadow = showCloumnForzenShadow;
+    if (showCloumnForzenShadow) {
+        CALayer *shadowLayer = self.columnHeaderView.layer;
+        shadowLayer.shadowColor = [UIColor blackColor].CGColor;
+        shadowLayer.shadowOpacity = 0.2f;
+        shadowLayer.shadowOffset = CGSizeMake(2,0);
+        shadowLayer.shadowRadius = 2;
+        shadowLayer.masksToBounds = NO;
+        
+        shadowLayer = self.cornerView.layer;
+        shadowLayer.shadowColor = [UIColor blackColor].CGColor;
+        shadowLayer.shadowOpacity = 0.2f;
+        shadowLayer.shadowOffset = CGSizeMake(2,0);
+        shadowLayer.shadowRadius = 2;
+        shadowLayer.masksToBounds = NO;
+    }
+}
+
 - (void)setup {
     self.intercellSpacing = CGSizeMake(1, 1);
     
@@ -140,10 +159,10 @@
     self.overlayView.autoresizesSubviews = NO;
     self.overlayView.userInteractionEnabled = NO;
 
-    [self.rootView addSubview:self.rowHeaderView];
     [self.rootView addSubview:self.tableView];
-    [self.rootView addSubview:self.cornerView];
+    [self.rootView addSubview:self.rowHeaderView];
     [self.rootView addSubview:self.columnHeaderView];
+    [self.rootView addSubview:self.cornerView];
     [super addSubview:self.overlayView];
     
     __weak typeof(self)weak_self = self;

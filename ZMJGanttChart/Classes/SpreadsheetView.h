@@ -45,6 +45,9 @@ CircularScrollScalingFactorMake(NSInteger horizontal, NSInteger vertical)
 ///
 /// - Note: The default spacing is `(1.0, 1.0)`. Negative values are not supported.
 @property (nonatomic, assign) CGSize     intercellSpacing;
+
+/// - Note: 冻结列展示阴影
+@property (nonatomic, assign) BOOL showCloumnForzenShadow;
 @property (nonatomic, strong) GridStyle *gridStyle;
 
 /// A Boolean value that indicates whether users can select cells in the spreadsheet view.

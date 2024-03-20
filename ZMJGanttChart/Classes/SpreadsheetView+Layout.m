@@ -29,9 +29,9 @@
     if (self.showCloumnForzenShadow) {
         // Create a shadow path to only apply shadow on the left side
         CGRect rect = self.cornerView.frame;
-        UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(rect.size.width -2/2, 0, 2, rect.size.height)];
+        UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(rect.size.width - 2, 0, 3, rect.size.height)];
         self.cornerView.layer.shadowPath = shadowPath.CGPath;
-        self.cornerView.layer.masksToBounds = self.tableView.contentOffset.x < 2;
+        self.cornerView.layer.masksToBounds = self.tableView.contentOffset.x < 3;
     }
 
     state = self.columnHeaderView.state;
@@ -43,9 +43,9 @@
         CGRect rect = self.columnHeaderView.frame;
         // Create a shadow path to only apply shadow on the left side
         CGFloat offset = MAX(0, self.columnHeaderView.contentOffset.y);
-        UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(rect.size.width -2/2, offset, 2,  state.contentSize.height - offset)];
+        UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(rect.size.width -2, offset, 3,  state.contentSize.height - offset )];
         self.columnHeaderView.layer.shadowPath = shadowPath.CGPath;
-        self.columnHeaderView.layer.masksToBounds = self.tableView.contentOffset.x < 2;
+        self.columnHeaderView.layer.masksToBounds = self.tableView.contentOffset.x < 3;
     }
     
     state = self.rowHeaderView.state;

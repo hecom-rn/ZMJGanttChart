@@ -71,8 +71,8 @@
 - (void)setShowCloumnForzenShadow:(BOOL)showCloumnForzenShadow {
     _showCloumnForzenShadow = showCloumnForzenShadow;
     if (showCloumnForzenShadow) {
-        self.columnHeaderView.layer.masksToBounds = self.tableView.contentOffset.x < 2;
-        self.cornerView.layer.masksToBounds = self.tableView.contentOffset.x < 2;
+        self.columnHeaderView.layer.masksToBounds = self.tableView.contentOffset.x < 3;
+        self.cornerView.layer.masksToBounds = self.tableView.contentOffset.x < 3;
     } else {
         self.columnHeaderView.layer.masksToBounds = YES;
         self.cornerView.layer.masksToBounds = YES;
@@ -109,6 +109,7 @@
     self.rootView.showsHorizontalScrollIndicator = NO;
     self.rootView.showsVerticalScrollIndicator = NO;
     self.rootView.delegate = self;
+    self.rootView.layer.masksToBounds = YES;
     [super addSubview:self.rootView];
     
     self.tableView.frame = self.bounds;
@@ -132,8 +133,9 @@
     shadowLayer.shadowColor = [UIColor blackColor].CGColor;
     shadowLayer.shadowOpacity = 0.2f;
     shadowLayer.shadowOffset = CGSizeMake(2,0);
-    shadowLayer.shadowRadius = 2;
+    shadowLayer.shadowRadius = 3;
     shadowLayer.masksToBounds = NO;
+
     
     frame = self.bounds;
     frame.size.height = 0;
@@ -156,7 +158,7 @@
     shadowLayer.shadowColor = [UIColor blackColor].CGColor;
     shadowLayer.shadowOpacity = 0.2f;
     shadowLayer.shadowOffset = CGSizeMake(2,0);
-    shadowLayer.shadowRadius = 2;
+    shadowLayer.shadowRadius = 3;
     shadowLayer.masksToBounds = NO;
 
     self.overlayView.frame = self.bounds;

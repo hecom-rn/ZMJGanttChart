@@ -31,7 +31,9 @@
         CGRect rect = self.cornerView.frame;
         UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(rect.size.width - 2, 0, 3, rect.size.height)];
         self.cornerView.layer.shadowPath = shadowPath.CGPath;
-        self.cornerView.layer.masksToBounds = self.tableView.contentOffset.x < 3;
+        BOOL masksToBounds = self.tableView.contentOffset.x < 3;
+        self.cornerView.layer.masksToBounds = masksToBounds;
+        self.cornerView.layer.shadowOpacity = !masksToBounds ? 0.2f : 0;
     }
 
     state = self.columnHeaderView.state;
@@ -45,7 +47,9 @@
         CGFloat offset = MAX(0, self.columnHeaderView.contentOffset.y);
         UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(rect.size.width -2, offset, 3,  state.contentSize.height - offset )];
         self.columnHeaderView.layer.shadowPath = shadowPath.CGPath;
-        self.columnHeaderView.layer.masksToBounds = self.tableView.contentOffset.x < 3;
+        BOOL masksToBounds = self.tableView.contentOffset.x < 3;
+        self.columnHeaderView.layer.masksToBounds = masksToBounds;
+        self.columnHeaderView.layer.shadowOpacity = !masksToBounds ? 0.2f : 0;
     }
     
     state = self.rowHeaderView.state;

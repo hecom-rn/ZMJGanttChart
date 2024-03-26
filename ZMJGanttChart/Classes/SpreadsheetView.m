@@ -71,14 +71,18 @@
 - (void)setShowCloumnForzenShadow:(BOOL)showCloumnForzenShadow {
     _showCloumnForzenShadow = showCloumnForzenShadow;
     if (showCloumnForzenShadow) {
-        self.columnHeaderView.layer.masksToBounds = self.tableView.contentOffset.x < 3;
-        self.cornerView.layer.masksToBounds = self.tableView.contentOffset.x < 3;
+        BOOL masksToBounds = self.tableView.contentOffset.x < 3;
+        self.columnHeaderView.layer.masksToBounds = masksToBounds;
+        self.cornerView.layer.masksToBounds = masksToBounds;
+        self.columnHeaderView.layer.shadowOpacity = !masksToBounds ? 0.2f : 0;
+        self.cornerView.layer.shadowOpacity = !masksToBounds ? 0.2f : 0;
     } else {
         self.columnHeaderView.layer.masksToBounds = YES;
         self.cornerView.layer.masksToBounds = YES;
+        self.columnHeaderView.layer.shadowOpacity = 0;
+        self.cornerView.layer.shadowOpacity = 0;
     }
 }
-
 - (void)setup {
     self.intercellSpacing = CGSizeMake(1, 1);
     

@@ -16,14 +16,22 @@
     self.rowHeaderView.delegate    = nil;
     self.columnHeaderView.delegate = nil;
     self.tableView.delegate        = nil;
+    self.tableHeaderView.delegate  = nil;
   
     __weak typeof(self)weak_self = self;
     void (^defer)(void) = ^(void) {
         weak_self.rowHeaderView.delegate    = weak_self;
         weak_self.columnHeaderView.delegate = weak_self;
         weak_self.tableView.delegate        = weak_self;
+        weak_self.tableHeaderView.delegate  = weak_self;
     };
 
+    if (scrollView.tag == 999999) {
+        CGPoint offset = self.tableView.contentOffset;
+        offset.y = -scrollView.frame.size.height / self.transform.a + scrollView.contentOffset.y / self.transform.a;
+        self.tableView.contentOffset = offset;
+    }
+    
     if (self.tableView.contentOffset.x < 0 && !self.stickyColumnHeader) {
         CGFloat offset = self.tableView.contentOffset.x * -1;
         CGRect frame = self.cornerView.frame;
@@ -53,11 +61,12 @@
         frame.origin.y = offset;
         self.rowHeaderView.frame = frame;
         
-        CGPoint headerViewOffset = self.tableHeaderView.contentOffset;
-        CGSize headerSize = self.tableHeaderView.frame.size;
-        headerViewOffset.y = headerSize.height - offset * self.transform.a;
-        self.tableHeaderView.contentOffset = headerViewOffset;
-   
+        if (scrollView.tag != 999999) {
+            CGPoint headerViewOffset = self.tableHeaderView.contentOffset;
+            CGSize headerSize = self.tableHeaderView.frame.size;
+            headerViewOffset.y = headerSize.height - offset * self.transform.a;
+            self.tableHeaderView.contentOffset = headerViewOffset;
+        }
     } else {
         CGRect frame = self.cornerView.frame;
         frame.origin.y = 0;

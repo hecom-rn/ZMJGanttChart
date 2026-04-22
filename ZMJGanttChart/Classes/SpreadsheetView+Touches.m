@@ -11,7 +11,14 @@
 @implementation SpreadsheetView (Touches)
 - (void)touchesBegan:(NSSet<UITouch *> *)touches event:(UIEvent *)event {
     if (self.currentTouch) {
-        return;
+        // Fabric 同步导航可能导致 touchesEnded:/touchesCancelled: 未送达 SpreadsheetView，
+        // currentTouch 残留。若其 phase 已是终止态，视为残留直接清除；否则是多指触控，跳过。
+        if (self.currentTouch.phase == UITouchPhaseEnded ||
+            self.currentTouch.phase == UITouchPhaseCancelled) {
+            self.currentTouch = nil;
+        } else {
+            return;
+        }
     }
     self.currentTouch = touches.anyObject;
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
